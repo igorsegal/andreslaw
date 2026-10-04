@@ -10,7 +10,7 @@ except ImportError:
     from mcp.server.fastmcp import FastMCP as MCPServer
 
 mcp = MCPServer(
-    "ANDRESLAW Observer",
+    "ASO Lilit",
 )
 
 
