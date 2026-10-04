@@ -1,0 +1,9 @@
+date,stage,test,target,result,evidence,notes
+2026-10-04,1,COMPILE,AS_Waves.mq4,PASS,"0 errors; 0 warnings; 193 ms","Wave core"
+2026-10-04,1,RUNTIME_LOAD,AS_Waves.mq4,PASS,"indicator visible; lines present; no Experts/Journal errors","User confirmation"
+2026-10-04,1,COMPILE,AS_Targets.mq4,PASS,"0 errors; 0 warnings; 171 ms","Targets"
+2026-10-04,2,COMPILE,Andreslav_AS.mq4,PASS,"0 errors; 0 warnings; 182 ms","Includes/provider restored"
+2026-10-04,3,COMPILE,AS_ModulesCompileTest.mq4,PASS,"0 errors; 0 warnings","Recovered module library"
+2026-10-04,4,COMPILE,Andreslav_AS.mq4,PASS,"0 errors; 0 warnings","Integrated safe core"
+2026-10-04,5,RUNTIME_INIT,"Andreslav_AS BTCUSD,M5",PASS,"initialized; trading_lock=1; cfg.enabled=false; equity=8.76","Safe runtime init"
+2026-10-04,5,NEW_BAR_PIPELINE,"BTCUSD,M5",NOT_RUN,"No new market bar/tick after attach","Retest when quotes flow"
