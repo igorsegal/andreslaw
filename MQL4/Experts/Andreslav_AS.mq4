@@ -1,9 +1,9 @@
 //+------------------------------------------------------------------+
 //|                                                 Andreslav_AS.mq4 |
-//|                     RECOVERY STAGE 4 / INTEGRATED SAFE CORE      |
+//|              RECOVERY STAGE 6 / MTF SOURCE SMOKE                 |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2026, AS Project"
-#property version   "1.04"
+#property version   "1.05"
 #property strict
 
 // Recovered SWT/Andreslav core
@@ -35,22 +35,22 @@
 #include <AS/tracker.mqh>
 #include <AS/daily_reset.mqh>
 
-input double InpHysteresis = 0.0000; // diagnostic only in Stage 4
+input double InpHysteresis = 0.0000; // diagnostic only
 input bool   InpVerboseLog = true;
 
 // -------------------------------------------------------------------
 // HARD SAFETY LOCK.
-// Stage 4 never sends/modifies/closes orders. This is deliberately NOT
-// an input, therefore it cannot be switched off from EA properties.
+// Stage 6 remains observation-only. No order operation is permitted.
+// This is deliberately NOT an input.
 // -------------------------------------------------------------------
-#define AS_STAGE4_TRADING_LOCK 1
+#define AS_STAGE6_TRADING_LOCK 1
 
 AS_WaveProvider *g_provider = NULL;
 AS_Config         g_cfg;
 AS_DailyState     g_daily;
 datetime          g_lastBarTime = 0;
 
-bool AS_Stage4LibrarySelfCheck()
+bool AS_Stage6LibrarySelfCheck()
 {
    // Exercise recovered signal contracts without creating a trade.
    AS_TrendHierarchy h;
@@ -76,25 +76,25 @@ int OnInit()
 {
    AS_ConfigSafeDefaults(g_cfg);
 
-   // Absolute Stage-4 safety invariant.
+   // Absolute safety invariant.
    g_cfg.enabled=false;
 
    if(InpHysteresis<0.0)
    {
-      Print("[AS][STAGE4][ERROR] InpHysteresis must be >= 0");
+      Print("[AS][STAGE6][ERROR] InpHysteresis must be >= 0");
       return(INIT_PARAMETERS_INCORRECT);
    }
 
    g_provider=new AS_WaveProvider();
    if(g_provider==NULL)
    {
-      Print("[AS][STAGE4][ERROR] Wave provider allocation failed");
+      Print("[AS][STAGE6][ERROR] Wave provider allocation failed");
       return(INIT_FAILED);
    }
 
    if(!g_provider.Init(3))
    {
-      Print("[AS][STAGE4][ERROR] Wave provider initialization failed");
+      Print("[AS][STAGE6][ERROR] Wave provider initialization failed");
       delete g_provider;
       g_provider=NULL;
       return(INIT_FAILED);
@@ -102,9 +102,9 @@ int OnInit()
 
    AS_DailyInit(g_daily);
 
-   if(!AS_Stage4LibrarySelfCheck())
+   if(!AS_Stage6LibrarySelfCheck())
    {
-      Print("[AS][STAGE4][ERROR] Recovered library self-check failed");
+      Print("[AS][STAGE6][ERROR] Recovered library self-check failed");
       delete g_provider;
       g_provider=NULL;
       return(INIT_FAILED);
@@ -113,8 +113,8 @@ int OnInit()
    AS_AccountSnapshot a;
    AS_GetAccountSnapshot(a);
 
-   Print("[AS][STAGE4] Integrated safe core initialized. trading_lock=",
-         AS_STAGE4_TRADING_LOCK,
+   Print("[AS][STAGE6] MTF-capable safe core initialized. trading_lock=",
+         AS_STAGE6_TRADING_LOCK,
          " cfg.enabled=",g_cfg.enabled,
          " equity=",DoubleToString(a.equity,2));
 
@@ -129,7 +129,7 @@ void OnDeinit(const int reason)
       g_provider=NULL;
    }
 
-   Print("[AS][STAGE4] Deinitialized. reason=",reason);
+   Print("[AS][STAGE6] Deinitialized. reason=",reason);
 }
 
 void OnTick()
@@ -149,16 +149,55 @@ void OnTick()
 
    if(iBars(Symbol(),Period())<4) return;
 
+   // ----------------------------------------------------------------
+   // CURRENT-TF PIPELINE
    // Single source of truth: AS_Waves indicator, closed bars only.
+   // ----------------------------------------------------------------
    double as3_now=0.0;
    double as3_prev=0.0;
    double as3_old=0.0;
-   if(!g_provider.GetWaveValue(3,1,as3_now) ||
-      !g_provider.GetWaveValue(3,2,as3_prev) ||
-      !g_provider.GetWaveValue(3,3,as3_old))
+
+   if(!g_provider.GetClosedAS3SeriesTF(PERIOD_CURRENT,
+                                       as3_now,as3_prev,as3_old))
    {
-      Print("[AS][STAGE4][WARN] AS3 closed-bar series unavailable");
+      Print("[AS][STAGE6][WARN] Current-TF AS3 closed-bar series unavailable");
       return;
+   }
+
+   // ----------------------------------------------------------------
+   // STAGE 6 MTF SOURCE SMOKE.
+   // H1 / D1 / W1 are explicit source contexts only.
+   // They are NOT yet assigned to short/medium/long/basic hierarchy.
+   // ----------------------------------------------------------------
+   double as3_h1=0.0;
+   double as3_d1=0.0;
+   double as3_w1=0.0;
+
+   bool h1_ok=g_provider.GetClosedAS3TF(PERIOD_H1,as3_h1);
+   bool d1_ok=g_provider.GetClosedAS3TF(PERIOD_D1,as3_d1);
+   bool w1_ok=g_provider.GetClosedAS3TF(PERIOD_W1,as3_w1);
+
+   if(InpVerboseLog)
+   {
+      if(h1_ok && d1_ok && w1_ok)
+      {
+         Print("[AS][STAGE6][MTF] source=AS_Waves",
+               " H1_bar=",TimeToString(iTime(Symbol(),PERIOD_H1,1),TIME_DATE|TIME_MINUTES),
+               " H1_AS3=",DoubleToString(as3_h1,8),
+               " D1_bar=",TimeToString(iTime(Symbol(),PERIOD_D1,1),TIME_DATE|TIME_MINUTES),
+               " D1_AS3=",DoubleToString(as3_d1,8),
+               " W1_bar=",TimeToString(iTime(Symbol(),PERIOD_W1,1),TIME_DATE|TIME_MINUTES),
+               " W1_AS3=",DoubleToString(as3_w1,8),
+               " trading_lock=",AS_STAGE6_TRADING_LOCK);
+      }
+      else
+      {
+         Print("[AS][STAGE6][WARN] MTF source unavailable",
+               " H1_ok=",h1_ok,
+               " D1_ok=",d1_ok,
+               " W1_ok=",w1_ok,
+               " trading_lock=",AS_STAGE6_TRADING_LOCK);
+      }
    }
 
    // Update only non-trading infrastructure.
@@ -181,7 +220,7 @@ void OnTick()
 
    if(InpVerboseLog)
    {
-      Print("[AS][STAGE4] bar=",
+      Print("[AS][STAGE6] bar=",
             TimeToString(iTime(Symbol(),Period(),1),TIME_DATE|TIME_MINUTES),
             " AS3=",DoubleToString(as3_now,8),
             " prev=",DoubleToString(as3_prev,8),
@@ -191,10 +230,10 @@ void OnTick()
             " spread_ok=",spread_ok,
             " open_positions=",p.buys+p.sells,
             " daily_block=",g_daily.trading_blocked,
-            " trading_lock=",AS_STAGE4_TRADING_LOCK);
+            " trading_lock=",AS_STAGE6_TRADING_LOCK);
    }
 
-   // IMPORTANT: no OrderSend / OrderModify / OrderClose call exists here.
-   // Signal/execution/PM modules are linked and compile-tested, but activation
-   // is deferred until verified multi-timeframe trend + SWTsr providers exist.
+   // IMPORTANT:
+   // No OrderSend / OrderModify / OrderClose call exists here.
+   // No AS_TrendHierarchy field is populated from guessed TF mappings.
 }
