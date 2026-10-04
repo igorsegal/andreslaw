@@ -19,3 +19,8 @@ MQL4/Files/*
 MQL4/Logs/*
 MQL4/Tester/Files/*
 MQL4/Tester/Logs/*
+
+# Observer generated state
+OBSERVER/STATE.json
+OBSERVER/QUICK_START.md
+OBSERVER/__pycache__/
