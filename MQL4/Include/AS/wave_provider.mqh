@@ -44,20 +44,53 @@ public:
       return true;
    }
 
+   bool GetWaveValue(const int waveIndex,
+                     const int shift,
+                     double &outValue)
+   {
+      // EXACT Stage-5 current-timeframe path.
+      // Do not route this proven path through the MTF bridge.
+      if(waveIndex < 0 || waveIndex > 4 || shift < 0)
+         return false;
+
+      ResetLastError();
+
+      double value = iCustom(NULL, 0, m_indicatorName,
+                             12, 60, 288, 1440, 7200,
+                             0.7, 2000,
+                             0.25, 1.0, 1.0,
+                             RawBufferForWave(waveIndex), shift);
+
+      int err = GetLastError();
+      if(err != 0)
+      {
+         Print("[AS][WAVE_PROVIDER][ERROR] current-TF iCustom failed, err=", err,
+               " wave=", waveIndex, " shift=", shift);
+         return false;
+      }
+
+      if(value == EMPTY_VALUE || !MathIsValidNumber(value))
+         return false;
+
+      outValue = value;
+      return true;
+   }
+
    bool GetWaveValueTF(const int timeframe,
                        const int waveIndex,
                        const int shift,
                        double &outValue)
    {
+      // PERIOD_CURRENT must use the exact Stage-5 path above.
+      if(timeframe == PERIOD_CURRENT || timeframe == 0)
+         return GetWaveValue(waveIndex, shift, outValue);
+
       if(timeframe < 0 || waveIndex < 0 || waveIndex > 4 || shift < 0)
          return false;
 
       ResetLastError();
 
-      // IMPORTANT:
-      // These inputs exactly match AS_Waves v8 defaults recovered in Stage 1.
-      // The timeframe argument changes only the source chart period.
-      // Wave math remains inside AS_Waves; no second Butterworth engine exists here.
+      // Explicit higher-timeframe bridge. Wave math remains inside AS_Waves.
       double value = iCustom(NULL, timeframe, m_indicatorName,
                              12, 60, 288, 1440, 7200,
                              0.7, 2000,
@@ -67,7 +100,7 @@ public:
       int err = GetLastError();
       if(err != 0)
       {
-         Print("[AS][WAVE_PROVIDER][ERROR] iCustom failed, err=", err,
+         Print("[AS][WAVE_PROVIDER][ERROR] MTF iCustom failed, err=", err,
                " tf=", timeframe,
                " wave=", waveIndex,
                " shift=", shift);
@@ -79,13 +112,6 @@ public:
 
       outValue = value;
       return true;
-   }
-
-   bool GetWaveValue(const int waveIndex,
-                     const int shift,
-                     double &outValue)
-   {
-      return GetWaveValueTF(PERIOD_CURRENT, waveIndex, shift, outValue);
    }
 
    bool GetClosedAS3TF(const int timeframe, double &outValue)
