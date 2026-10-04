@@ -106,7 +106,7 @@ def tests_status():
         "last_pass": passed[-1] if passed else None,
         "pending_checks": pending,
         "max_pass_stage": max(stages) if stages else None,
-        "compile_status": "PASS" if compile_rows and not compile_fail else ("FAIL" if compile_fail else "UNKNOWN"),
+        "compile_status": "FAIL" if compile_fail else ("PENDING" if compile_pending else ("PASS" if compile_rows else "UNKNOWN")),
         "runtime_status": "PASS" if runtime_rows and not runtime_fail else ("FAIL" if runtime_fail else "UNKNOWN"),
     }
 
