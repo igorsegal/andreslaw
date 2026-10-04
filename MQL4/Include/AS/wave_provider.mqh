@@ -1,7 +1,12 @@
 // =============================================================================
 //  AS :: wave_provider.mqh
-//  RECOVERY STAGE 2
-//  Single source of truth: compiled indicator Indicators\AS\AS_Waves.ex4
+//  RECOVERY STAGE 6 - MTF SOURCE BRIDGE
+//
+//  Single source of truth:
+//    compiled indicator Indicators\AS\AS_Waves.ex4
+//
+//  Stage 6 adds explicit-timeframe access only.
+//  It does NOT invent the mapping of SWT hierarchy names to timeframes.
 // =============================================================================
 #ifndef AS_WAVE_PROVIDER_MQH
 #define AS_WAVE_PROVIDER_MQH
@@ -39,16 +44,21 @@ public:
       return true;
    }
 
-   bool GetWaveValue(const int waveIndex, const int shift, double &outValue)
+   bool GetWaveValueTF(const int timeframe,
+                       const int waveIndex,
+                       const int shift,
+                       double &outValue)
    {
-      if(waveIndex < 0 || waveIndex > 4 || shift < 0)
+      if(timeframe < 0 || waveIndex < 0 || waveIndex > 4 || shift < 0)
          return false;
 
       ResetLastError();
 
-      // IMPORTANT: these inputs exactly match AS_Waves v8 defaults recovered in Stage 1.
-      // Keeping the wave math in one place avoids a second, divergent Butterworth engine.
-      double value = iCustom(NULL, 0, m_indicatorName,
+      // IMPORTANT:
+      // These inputs exactly match AS_Waves v8 defaults recovered in Stage 1.
+      // The timeframe argument changes only the source chart period.
+      // Wave math remains inside AS_Waves; no second Butterworth engine exists here.
+      double value = iCustom(NULL, timeframe, m_indicatorName,
                              12, 60, 288, 1440, 7200,
                              0.7, 2000,
                              0.25, 1.0, 1.0,
@@ -58,7 +68,9 @@ public:
       if(err != 0)
       {
          Print("[AS][WAVE_PROVIDER][ERROR] iCustom failed, err=", err,
-               " wave=", waveIndex, " shift=", shift);
+               " tf=", timeframe,
+               " wave=", waveIndex,
+               " shift=", shift);
          return false;
       }
 
@@ -69,10 +81,33 @@ public:
       return true;
    }
 
-   bool GetCurrentAS3(double &outValue)
+   bool GetWaveValue(const int waveIndex,
+                     const int shift,
+                     double &outValue)
+   {
+      return GetWaveValueTF(PERIOD_CURRENT, waveIndex, shift, outValue);
+   }
+
+   bool GetClosedAS3TF(const int timeframe, double &outValue)
    {
       // Closed bar only: no use of the forming bar.
-      return GetWaveValue(3, 1, outValue);
+      return GetWaveValueTF(timeframe, 3, 1, outValue);
+   }
+
+   bool GetClosedAS3SeriesTF(const int timeframe,
+                             double &nowValue,
+                             double &prevValue,
+                             double &oldValue)
+   {
+      if(!GetWaveValueTF(timeframe, 3, 1, nowValue))  return false;
+      if(!GetWaveValueTF(timeframe, 3, 2, prevValue)) return false;
+      if(!GetWaveValueTF(timeframe, 3, 3, oldValue))  return false;
+      return true;
+   }
+
+   bool GetCurrentAS3(double &outValue)
+   {
+      return GetClosedAS3TF(PERIOD_CURRENT, outValue);
    }
 };
 
