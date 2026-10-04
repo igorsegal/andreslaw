@@ -238,8 +238,8 @@ def print_status(state):
     t = state["tests"]
     a = state["next_action"]
     z = state["safety"]
-    print("ANDRESLAW OBSERVER")
-    print("==================")
+    print("ASO Lilit")
+    print("=========")
     print("PROJECT=" + p["status"])
     print("CHECKPOINT=" + str(p["checkpoint"]))
     print("GIT_BRANCH=" + str(g.get("branch") or "UNKNOWN"))
