@@ -1,0 +1,21 @@
+# MT4 compiled/runtime artifacts
+*.ex4
+*.ex5
+*.log
+*.hst
+*.fxt
+*.tst
+*.set.bak
+
+# Windows/editor noise
+Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
+*.swp
+
+# Terminal-local caches/state
+MQL4/Files/*
+MQL4/Logs/*
+MQL4/Tester/Files/*
+MQL4/Tester/Logs/*
