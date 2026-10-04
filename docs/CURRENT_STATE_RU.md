@@ -54,3 +54,56 @@
 - включение реальной торговли.
 
 Fibonacci-логика не объявляется частью канонического SWT без отдельного доказательства.
+
+
+## AS specification checkpoint — 2026-10-04
+
+Создан и закреплён новый доказательный слой Andreslaw:
+
+- `docs/AS_CANONICAL_ARCHITECTURE_RU.md`
+- `docs/AS_REQUIREMENTS.csv`
+- `docs/AS_TREND_4_8_SPEC_RU.md`
+- `docs/AS_TREND_4_8_TEST_MATRIX.csv`
+
+Правило проекта:
+`SOURCE -> REQUIREMENT -> CODE -> UNIT TEST -> COMPILE -> RUNTIME -> INTEGRATION`.
+
+### Trend 4..8 — source checkpoint
+
+Подтверждено по первичным материалам SWT:
+
+- Basic=8, Long=7, Medium=6, Short=5, Weekly=4 образуют группу Trend;
+- TrendVector ограничен 4..8;
+- non-adaptive режим использует согласование всех выбранных уровней;
+- adaptive v3.3 использует старший направленный Trend;
+- при коррекции всех старших уровней направление задаёт Weekly;
+- DominantCorrection — отдельная блокировка новых входов;
+- ContrTrend инвертирует результирующий Trend, но не Pattern.
+
+Выявлен version drift между старой SWT_Robot и v3.3:
+- legacy DominantTrend;
+- legacy ReverseReadyToTrade;
+- не доказан порядок DominantCorrection + ContrTrend.
+
+Эти пункты оставлены в QUARANTINE и не должны додумываться.
+
+### Stage 6 runtime
+
+Stage 6 FIX1:
+- compile PASS: 0 errors / 0 warnings;
+- init PASS;
+- current-TF runtime read остаётся PENDING до нового M5 тика/бара;
+- H1/D1/W1 smoke оценивается только после восстановления current-TF runtime.
+
+### ASO Lilit
+
+ASO Lilit обновлён:
+- знает AS canonical architecture;
+- читает AS_REQUIREMENTS.csv;
+- отслеживает AS Trend 4..8 spec/matrix;
+- различает historical FAIL и текущий PENDING;
+- MCP предоставляет requirements_status;
+- trading остаётся LOCKED.
+
+Следующий исследовательский шаг:
+реализовать self-test для `AS_TREND_4_8_TEST_MATRIX.csv` до изменения production `sig_trend.mqh`.
