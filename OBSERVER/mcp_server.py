@@ -39,6 +39,12 @@ def test_status() -> dict:
 
 
 @mcp.tool()
+def requirements_status() -> dict:
+    """Return the current AS requirements/specification status."""
+    return core.requirements_status()
+
+
+@mcp.tool()
 def next_action() -> dict:
     """Return the first pending recovery action from the canonical test registry."""
     state = core.collect_state()
