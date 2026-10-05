@@ -16,3 +16,4 @@
 "2026-10-05","7","SELF_TEST","AS_Trend48SelfTest.mq4","PASS","PASS=24 FAIL=0 TOTAL=24","Trend 4..8 matrix verified after adaptive fail-closed fix"
 "2026-10-05","8","PATTERN_BASE_MATRIX","AS_Pattern13SelfTest.mq4","PASS","PASS=14 FAIL=0 TOTAL=14","Hourly + IDay + Daily base Pattern verified; production sig_pattern.mqh required no change"
 "2026-10-05","9","W2_SIGNAL_MATRIX","AS_W2SignalSelfTest.mq4","PASS","PASS=14 FAIL=0 TOTAL=14","W2 zero-cross and same-side turn-away signals verified; sig_reversal.mqh required no production change"
+"2026-10-05","10","PATTERN_CONTEXT_MATRIX","AS_PatternContextSelfTest.mq4","PASS","PASS=20 FAIL=0 TOTAL=20","PatternContext signs/slopes/zero-cross/turns and fail-closed input validity verified; AS-PATTERN-002 remains RESEARCH"

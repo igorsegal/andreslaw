@@ -1,0 +1,21 @@
+﻿ID,TYPE,older,previous,current,history_valid,expected_sign_current,expected_sign_previous,expected_slope_current,expected_slope_previous,expected_cross_up,expected_cross_down,expected_turn_up,expected_turn_down,hourly_valid,iday_valid,daily_valid,expected_context_valid,expected_pattern,NOTE
+AS-PC-001,WAVE,1,2,3,1,1,1,1,1,0,0,0,0,,,,,,,positive rising
+AS-PC-002,WAVE,3,2,1,1,1,1,-1,-1,0,0,0,0,,,,,,,positive falling
+AS-PC-003,WAVE,-3,-2,-1,1,-1,-1,1,1,0,0,0,0,,,,,,,negative rising
+AS-PC-004,WAVE,-1,-2,-3,1,-1,-1,-1,-1,0,0,0,0,,,,,,,negative falling
+AS-PC-005,WAVE,-1,-0.5,0.5,1,1,-1,1,1,1,0,0,0,,,,,,,zero cross up
+AS-PC-006,WAVE,1,0.5,-0.5,1,-1,1,-1,-1,0,1,0,0,,,,,,,zero cross down
+AS-PC-007,WAVE,-1,-0.5,0,1,0,-1,1,1,0,0,0,0,,,,,,,touch zero is not cross
+AS-PC-008,WAVE,-0.5,0,0.5,1,1,0,1,1,1,0,0,0,,,,,,,leave zero upward
+AS-PC-009,WAVE,0.5,0,-0.5,1,-1,0,-1,-1,0,1,0,0,,,,,,,leave zero downward
+AS-PC-010,WAVE,3,2,2.5,1,1,1,1,-1,0,0,1,0,,,,,,,slope turns up on positive side
+AS-PC-011,WAVE,1,2,1.5,1,1,1,-1,1,0,0,0,1,,,,,,,slope turns down on positive side
+AS-PC-012,WAVE,-1,-2,-1.5,1,-1,-1,1,-1,0,0,1,0,,,,,,,slope turns up on negative side
+AS-PC-013,WAVE,-3,-2,-2.5,1,-1,-1,-1,1,0,0,0,1,,,,,,,slope turns down on negative side
+AS-PC-014,WAVE,1,1,2,1,1,1,1,0,0,0,1,0,,,,,,,flat then up
+AS-PC-015,WAVE,1,2,2,1,1,1,0,1,0,0,0,0,,,,,,,rising then flat is not turn
+AS-PC-016,WAVE,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,invalid history fail closed
+AS-PC-017,CONTEXT,,,,,,,,,,,,,1,1,1,1,0,all required roles valid
+AS-PC-018,CONTEXT,,,,,,,,,,,,,0,1,1,0,0,hourly missing fail closed
+AS-PC-019,CONTEXT,,,,,,,,,,,,,1,0,1,0,0,iday missing fail closed
+AS-PC-020,CONTEXT,,,,,,,,,,,,,1,1,0,0,0,daily missing fail closed
