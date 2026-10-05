@@ -26,7 +26,7 @@ int AS_TrendDirection(AS_TrendHierarchy &h,AS_Config &c,bool &dominant_correctio
       for(int level2=top; level2>=4; level2--)
       {
          AS_TrendState s;
-         if(!AS_GetTrendByLevel(h,level2,s)) continue;
+         if(!AS_GetTrendByLevel(h,level2,s)) return AS_DIR_NO;
          if(!s.correction && s.direction!=AS_DIR_NO)
          { dir=s.direction; dominant_level=level2; break; }
       }
