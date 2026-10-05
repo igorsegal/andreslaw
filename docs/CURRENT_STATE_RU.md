@@ -1,7 +1,7 @@
 # ANDRESLAW — текущее состояние восстановления
 
-Дата контрольной точки: **2026-10-04**
-Статус: **RECOVERY STAGE 5 COMPLETE / NEW-BAR PIPELINE VERIFIED**
+Дата контрольной точки: **2026-10-05**
+Статус: **RECOVERY STAGE 7 COMPLETE / TREND 4..8 24/24 PASS**
 
 ## Подтверждено
 
@@ -88,22 +88,41 @@ Fibonacci-логика не объявляется частью канониче
 Эти пункты оставлены в QUARANTINE и не должны додумываться.
 
 ### Stage 6 runtime
-
-Stage 6 FIX1:
-- compile PASS: 0 errors / 0 warnings;
-- init PASS;
-- current-TF runtime read остаётся PENDING до нового M5 тика/бара;
-- H1/D1/W1 smoke оценивается только после восстановления current-TF runtime.
-
+Stage 6 FIX1 — **PASS**.
+Подтверждено 2026-10-05 на `BTCUSD,M5`:
+- current-TF closed-bar series — PASS:
+  - AS3=663.63134830
+  - prev=659.64566545
+  - old=655.42240511
+  - shifts 1/2/3 подтверждены;
+- MTF source smoke — PASS:
+  - H1 AS3=3637.05721677
+  - D1 AS3=28340.63195201
+  - W1 AS3=28117.88277264;
+- единственный источник волновой математики — `AS_Waves`;
+- первоначальный `ERR_NO_HISTORY_DATA` был связан с первичной загрузкой истории H1/D1/W1 и исчез после её подготовки;
+- `trading_lock=1`;
+- `cfg.enabled=false`.
+### Stage 7 — Trend 4..8
+Создан `AS_Trend48SelfTest.mq4`.
+Первый прогон обнаружил один production-дефект:
+- `AS-TR-028`: adaptive mode пропускал невалидный обязательный старший уровень вместо fail-closed;
+- исходный результат: `PASS=23 FAIL=1 TOTAL=24`.
+В `sig_trend.mqh` выполнено минимальное исправление:
+невалидный обязательный уровень в adaptive-ветке теперь возвращает `AS_DIR_NO`.
+Контрольный повтор:
+- `PASS=24`
+- `FAIL=0`
+- `TOTAL=24`
+Trend 4..8 считается подтверждённым по цепочке:
+`SOURCE -> REQUIREMENT -> CODE -> UNIT TEST -> FIX -> REGRESSION PASS`.
 ### ASO Lilit
-
-ASO Lilit обновлён:
-- знает AS canonical architecture;
-- читает AS_REQUIREMENTS.csv;
-- отслеживает AS Trend 4..8 spec/matrix;
-- различает historical FAIL и текущий PENDING;
-- MCP предоставляет requirements_status;
+ASO Lilit должен отражать новое состояние:
+- Stage 6 runtime — PASS;
+- Trend 4..8 — 24/24 PASS;
+- historical FAIL сохраняется как история;
+- pending runtime для Stage 6 отсутствует;
 - trading остаётся LOCKED.
-
 Следующий исследовательский шаг:
-реализовать self-test для `AS_TREND_4_8_TEST_MATRIX.csv` до изменения production `sig_trend.mqh`.
+после закрытия Stage 6 и Trend 4..8 определить следующий доказанный участок SWT/Andreslaw по `AS_REQUIREMENTS.csv`; неподтверждённые соответствия timeframe и QUARANTINE-правила не додумывать.
+Торговля остаётся **LOCKED** до завершения восстановительного и интеграционного контура.
