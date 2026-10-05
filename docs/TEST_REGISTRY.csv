@@ -15,3 +15,4 @@
 "2026-10-05","6_FIX1","MTF_SOURCE_SMOKE","Andreslav_AS BTCUSD,M5","PASS","06:40 H1_AS3=3637.05721677; D1_AS3=28340.63195201; W1_AS3=28117.88277264; trading_lock=1","H1/D1/W1 verified from AS_Waves; initial ERR_NO_HISTORY_DATA resolved after history preload"
 "2026-10-05","7","SELF_TEST","AS_Trend48SelfTest.mq4","PASS","PASS=24 FAIL=0 TOTAL=24","Trend 4..8 matrix verified after adaptive fail-closed fix"
 "2026-10-05","8","PATTERN_BASE_MATRIX","AS_Pattern13SelfTest.mq4","PASS","PASS=14 FAIL=0 TOTAL=14","Hourly + IDay + Daily base Pattern verified; production sig_pattern.mqh required no change"
+"2026-10-05","9","W2_SIGNAL_MATRIX","AS_W2SignalSelfTest.mq4","PASS","PASS=14 FAIL=0 TOTAL=14","W2 zero-cross and same-side turn-away signals verified; sig_reversal.mqh required no production change"
