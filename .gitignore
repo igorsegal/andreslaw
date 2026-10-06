@@ -24,3 +24,5 @@ MQL4/Tester/Logs/*
 OBSERVER/STATE.json
 OBSERVER/QUICK_START.md
 OBSERVER/__pycache__/
+__pycache__/
+*.pyc
