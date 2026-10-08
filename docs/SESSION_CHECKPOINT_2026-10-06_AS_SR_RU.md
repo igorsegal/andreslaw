@@ -231,3 +231,32 @@ Conclusion:
 - this does NOT prove that AS_sr should copy SWTsr width;
 - K=0.50 is still only a hypothesis and must not be frozen from the width ratio alone;
 - next research step is a hysteresis sweep / event-persistence study before changing production geometry.
+
+
+---
+## 9. Hysteresis threshold probe — 2026-10-08
+
+Probe:
+- MQL4/Experts/AS_sr_HysteresisProbe.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed SEEK episodes:
+- total = 71
+- UP = 24
+- DOWN = 47
+- mean duration = 3.577 bars
+- max duration = 10 bars
+- mean max extension = 0.854151 * W
+- max extension = 6.887500 * W
+
+Threshold reach rates:
+- K=0.25 -> 50/71 = 70.42%
+- K=0.50 -> 36/71 = 50.70%
+- K=1.00 -> 15/71 = 21.13%
+- K=2.00 -> 8/71 = 11.27%
+
+Conclusion:
+- K=0.50 is not source-proven and is not supported by a clear natural breakpoint in this distribution;
+- using K=0.50 would filter roughly half of current SEEK episodes;
+- the next useful test is not to freeze K, but to sweep K and compare resulting AS_sr event cadence/timing against SWTsr W4 change events on the same 500-bar segment.
