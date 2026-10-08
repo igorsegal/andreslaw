@@ -48,13 +48,18 @@ int OnInit()
    SetIndexLabel(1,"AS_sr:S");
    SetIndexEmptyValue(1,EMPTY_VALUE);
 
+   // Guide states may exist for only one bar.
+   // DRAW_LINE would make an isolated guide value invisible,
+   // therefore guides are explicit point markers.
    SetIndexBuffer(2,ResistanceGuideBuffer);
-   SetIndexStyle(2,DRAW_LINE,STYLE_DASH,1,clrTomato);
+   SetIndexStyle(2,DRAW_ARROW,STYLE_SOLID,1,clrOrange);
+   SetIndexArrow(2,159);
    SetIndexLabel(2,"AS_sr:Rguide");
    SetIndexEmptyValue(2,EMPTY_VALUE);
 
    SetIndexBuffer(3,SupportGuideBuffer);
-   SetIndexStyle(3,DRAW_LINE,STYLE_DASH,1,clrLimeGreen);
+   SetIndexStyle(3,DRAW_ARROW,STYLE_SOLID,1,clrAqua);
+   SetIndexArrow(3,159);
    SetIndexLabel(3,"AS_sr:Sguide");
    SetIndexEmptyValue(3,EMPTY_VALUE);
 
