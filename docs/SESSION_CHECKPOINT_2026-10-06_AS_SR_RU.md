@@ -194,3 +194,40 @@ TRADING: LOCKED
 2. SWTsr vs AS_sr width measurement;
 3. проверить hysteresis K относительно W;
 4. после этого заморозить AS_sr v1 geometry.
+
+
+---
+## 8. Width measurement — 2026-10-08
+
+Probe:
+- MQL4/Experts/AS_SWTsr_ASsrWidthProbe.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Coverage:
+- SWTsr valid: 500/500
+- AS_sr ACTIVE: 321
+- AS_sr GUIDE/SEEK: 179
+- AS_sr invalid: 0
+- effective AS_sr coverage: 500/500
+
+Mean widths:
+- ACTIVE overlap:
+  - SWTsr = 0.02641738
+  - AS_sr = 0.00263424
+  - SWTsr / AS_sr = 10.028477
+- EFFECTIVE (ACTIVE + GUIDE):
+  - SWTsr = 0.02624302
+  - AS_sr = 0.00227088
+  - SWTsr / AS_sr = 11.556322
+
+Ratio distribution SWTsr_width / AS_sr_width:
+- ACTIVE: mean=13.579390; median=11.722222; p25=7.368201; p75=16.299363
+- EFFECTIVE: mean=16.656413; median=13.866142; p25=7.686901; p75=21.105263
+- EFFECTIVE range: 2.504551 .. 83.857143
+
+Conclusion:
+- current AS_sr is materially narrower than SWTsr W4 on the tested segment;
+- this does NOT prove that AS_sr should copy SWTsr width;
+- K=0.50 is still only a hypothesis and must not be frozen from the width ratio alone;
+- next research step is a hysteresis sweep / event-persistence study before changing production geometry.
