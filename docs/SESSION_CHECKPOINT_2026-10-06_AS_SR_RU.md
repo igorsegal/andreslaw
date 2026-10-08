@@ -260,3 +260,28 @@ Conclusion:
 - K=0.50 is not source-proven and is not supported by a clear natural breakpoint in this distribution;
 - using K=0.50 would filter roughly half of current SEEK episodes;
 - the next useful test is not to freeze K, but to sweep K and compare resulting AS_sr event cadence/timing against SWTsr W4 change events on the same 500-bar segment.
+
+
+---
+## 10. Hysteresis sweep vs SWTsr event timing — 2026-10-08
+
+Probe:
+- MQL4/Experts/AS_sr_HysteresisSweepProbe.mq4
+- EURUSD,H1
+- 500 closed bars
+- SWTsr change events = 43
+- AS_sr SEEK episodes = 71
+- event matching window = +/-2 H1 bars
+
+Selected results:
+- K=0.10: hits=60, precision=23.33%, approximate SWTsr recall=32.56%
+- K=0.50: hits=36, precision=27.78%, approximate SWTsr recall=23.26%
+- K=1.00: hits=15, precision=46.67%, approximate SWTsr recall=16.28%
+- K=2.00: hits=8, precision=62.50%, approximate SWTsr recall=11.63%
+
+Conclusion:
+- there is no tested scalar K that makes AS_sr SEEK threshold crossings reproduce SWTsr W4 change timing;
+- K=0.50 is explicitly rejected as a SWTsr-calibration candidate;
+- increasing K trades recall for precision but does not reveal a useful matching optimum;
+- AS_sr remains a project formalization, not a recovered SWTsr clone;
+- if the goal is SWTsr recovery, the next step must study SWTsr post-break reset geometry directly rather than tune AS_sr hysteresis.
