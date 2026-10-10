@@ -1,10 +1,11 @@
 param(
     [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$TerminalMql4 = "",
-    [switch]$Apply
+    [switch]$Preview
 )
 
 $ErrorActionPreference = "Stop"
+$Apply = -not $Preview
 
 function Get-Mql4Root([string]$Root) {
     $candidate = Join-Path $Root "MQL4"
@@ -211,11 +212,48 @@ Write-Host ""
 $repoPlan = Invoke-Normalize $repoMql4 -DoApply:$Apply
 Update-RepoReferences $RepoRoot $repoPlan -DoApply:$Apply
 
-if ($TerminalMql4) {
+if ($TerminalMql4 -and $Apply) {
     Write-Host ""
     Write-Host "[TERMINAL] $TerminalMql4"
+
     $terminalRoot = Get-Mql4Root $TerminalMql4
-    Invoke-Normalize $terminalRoot -DoApply:$Apply | Out-Null
+
+    foreach ($kind in @("Experts","Indicators")) {
+        $dstDir = Join-Path (Join-Path $terminalRoot $kind) "AS"
+        New-Item -ItemType Directory -Path $dstDir -Force | Out-Null
+    }
+
+    foreach ($p in $repoPlan) {
+        $kindRoot = Join-Path $terminalRoot $p.Kind
+        $dstDir = Join-Path $kindRoot "AS"
+
+        foreach ($ext in @(".mq4",".ex4")) {
+            $oldName = $p.OldStem + $ext
+            $newName = $p.NewStem + $ext
+
+            Get-ChildItem $kindRoot -Recurse -File -Filter $oldName -ErrorAction SilentlyContinue |
+                ForEach-Object {
+                    $dst = Join-Path $dstDir $newName
+
+                    if ($_.FullName -ine $dst) {
+                        Move-Item -LiteralPath $_.FullName -Destination $dst -Force
+                    }
+                }
+        }
+    }
+
+    foreach ($kind in @("Experts","Indicators")) {
+        $repoKind = Join-Path $repoMql4 $kind
+        $repoAs = Join-Path $repoKind "AS"
+        $terminalAs = Join-Path (Join-Path $terminalRoot $kind) "AS"
+
+        if (Test-Path $repoAs) {
+            Get-ChildItem $repoAs -File -Filter "*.mq4" |
+                Copy-Item -Destination $terminalAs -Force
+        }
+    }
+
+    Write-Host "[PASS] terminal AS synchronized"
 }
 
 Write-Host ""
@@ -226,5 +264,4 @@ if ($Apply) {
 }
 else {
     Write-Host "[PREVIEW] no changes applied"
-    Write-Host "[NEXT] review mapping, then run with -Apply"
 }
