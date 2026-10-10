@@ -136,9 +136,8 @@ void Analyze()
    ArrayInitialize(hits,0);
    ArrayInitialize(matches,0);
 
-   bool crossed[K_COUNT];
-   for(int k=0;k<K_COUNT;k++)
-      crossed[k]=false;
+   int crossed[K_COUNT];
+   ArrayInitialize(crossed,0);
 
    bool inEpisode=false;
    int direction=0;
@@ -171,7 +170,7 @@ void Analyze()
          oldWidth=oldResistance-oldSupport;
 
          for(int k=0;k<K_COUNT;k++)
-            crossed[k]=false;
+            crossed[k]=0;
       }
 
       if(inEpisode && oldWidth>0.0)
@@ -187,7 +186,7 @@ void Analyze()
          {
             if(!crossed[k] && extension>=KValues[k])
             {
-               crossed[k]=true;
+               crossed[k]=1;
                hits[k]++;
 
                if(NearSWTChange(s,MatchWindowBars))
