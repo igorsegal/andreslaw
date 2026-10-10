@@ -13,7 +13,7 @@ double WaveValue(int waveIndex,int shift)
    return iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_Waves",
+      "AS\\Waves",
       12,60,288,1440,7200,
       0.7,
       2000,

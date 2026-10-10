@@ -1,4 +1,4 @@
-#property strict
+﻿#property strict
 
 input int BarsToScan = 500;
 int g_phase = 0;
@@ -45,7 +45,7 @@ double AS_R(int shift)
    return iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_sr",
+      "AS\\sr",
       0,
       shift
    );
@@ -57,7 +57,7 @@ double AS_S(int shift)
    return iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_sr",
+      "AS\\sr",
       1,
       shift
    );
@@ -69,7 +69,7 @@ double AS_RG(int shift)
    return iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_sr",
+      "AS\\sr",
       2,
       shift
    );
@@ -81,7 +81,7 @@ double AS_SG(int shift)
    return iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_sr",
+      "AS\\sr",
       3,
       shift
    );

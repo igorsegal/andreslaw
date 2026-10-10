@@ -5,7 +5,7 @@
 AS_Channel_01 остаётся RESEARCH / PROJECT_FORMALIZATION.
 ## AS_Channel_01 — baseline
 Файл:
-MQL4/Indicators/AS/AS_Channel_01.mq4
+MQL4/Indicators/AS/Channel_01.mq4
 Исходная модель:
 CENTER = EMA(Close, N)
 VOLATILITY =
@@ -42,7 +42,7 @@ B4=1.11600723
 Индикатор успешно рисует пять линий на графике.
 ## Сравнение с SWTch W4
 Файл:
-MQL4/Experts/AS_Channel01CompareProbe.mq4
+MQL4/Experts/Channel01.mq4
 После исправления вызова SWTch на явный PERIOD_H1:
 SUMMARY:
 valid=500

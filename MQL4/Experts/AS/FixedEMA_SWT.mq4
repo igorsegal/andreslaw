@@ -38,7 +38,7 @@ double FIXED(int period,int shift)
    return iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_FixedEMA_01",
+      "AS\\FixedEMA_01",
       period,
       0,
       shift

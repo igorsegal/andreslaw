@@ -96,7 +96,7 @@ AS_sr — собственная прозрачная реализация, НЕ
 ### AS_sr geometry
 Файлы:
 - MQL4/Include/AS/AS_sr_geometry.mqh
-- MQL4/Experts/AS_sr_GeometrySelfTest.mq4
+- MQL4/Experts/Geometry.mq4
 Проверены:
 - wick-only no breakout;
 - Close breakout up/down;
@@ -112,7 +112,7 @@ PASS
 ### AS_sr state machine
 Файлы:
 - MQL4/Include/AS/AS_sr_state.mqh
-- MQL4/Experts/AS_sr_StateSelfTest.mq4
+- MQL4/Experts/State.mq4
 Фазы:
 - AS_SR_ACTIVE
 - AS_SR_SEEK_HIGH
@@ -126,7 +126,7 @@ PASS
 ---
 ## 4. Первый индикатор AS_sr
 Создан:
-MQL4/Indicators/AS/AS_sr.mq4
+MQL4/Indicators/AS/sr.mq4
 Первый runtime на EURUSD,H1 состоялся.
 Обнаружена визуальная архитектурная проблема:
 во время AS_SR_SEEK_HIGH / AS_SR_SEEK_LOW candidate уже меняется
@@ -200,7 +200,7 @@ TRADING: LOCKED
 ## 8. Width measurement — 2026-10-08
 
 Probe:
-- MQL4/Experts/AS_SWTsr_ASsrWidthProbe.mq4
+- MQL4/Experts/Width.mq4
 - EURUSD,H1
 - 500 closed bars
 
@@ -237,7 +237,7 @@ Conclusion:
 ## 9. Hysteresis threshold probe — 2026-10-08
 
 Probe:
-- MQL4/Experts/AS_sr_HysteresisProbe.mq4
+- MQL4/Experts/Hysteresis.mq4
 - EURUSD,H1
 - 500 closed bars
 
@@ -266,7 +266,7 @@ Conclusion:
 ## 10. Hysteresis sweep vs SWTsr event timing — 2026-10-08
 
 Probe:
-- MQL4/Experts/AS_sr_HysteresisSweepProbe.mq4
+- MQL4/Experts/HysteresisSweep.mq4
 - EURUSD,H1
 - 500 closed bars
 - SWTsr change events = 43
@@ -291,7 +291,7 @@ Conclusion:
 ## 11. SWTsr reset geometry probe — 2026-10-10
 
 Probe:
-- MQL4/Experts/AS_SWTsrResetGeometryProbe.mq4
+- MQL4/Experts/ResetGeometry.mq4
 - EURUSD,H1
 - 500 closed bars
 

@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 $Repo = Split-Path -Parent $PSScriptRoot
 $Mt4  = "C:\Users\user\AppData\Roaming\MetaQuotes\Terminal\619E963F477248A9FDCF5F38F45D8C98\MQL4"
@@ -8,7 +8,7 @@ if (-not (Test-Path $Mt4)) {
 }
 
 $sets = @(
-    @{ Src = Join-Path $Repo "MQL4\Experts";       Dst = Join-Path $Mt4 "Experts";       Filter = @("Andreslav_AS.mq4","AS_ModulesCompileTest.mq4") },
+    @{ Src = Join-Path $Repo "MQL4\Experts";       Dst = Join-Path $Mt4 "Experts";       Filter = @("Andreslav.mq4","Modules.mq4") },
     @{ Src = Join-Path $Repo "MQL4\Indicators\AS"; Dst = Join-Path $Mt4 "Indicators\AS"; Filter = @("*.mq4") },
     @{ Src = Join-Path $Repo "MQL4\Include\AS";    Dst = Join-Path $Mt4 "Include\AS";    Filter = @("*.mqh") }
 )

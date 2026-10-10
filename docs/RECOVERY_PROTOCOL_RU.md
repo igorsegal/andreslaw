@@ -1,4 +1,4 @@
-# ANDRESLAW — протокол восстановления
+﻿# ANDRESLAW — протокол восстановления
 
 ## Исходная проблема
 
@@ -22,13 +22,13 @@
 Runtime `AS_Waves`: **PASS**.
 
 ### Stage 2 — главный EA и provider
-Восстановлены `wave_provider.mqh`, `as_integration.mqh`; исправлен главный `Andreslav_AS.mq4`.
+Восстановлены `wave_provider.mqh`, `as_integration.mqh`; исправлен главный `Andreslav.mq4`.
 Provider получает AS3 через уже проверенный `AS_Waves`, исключая вторую реализацию фильтра.
 Результат: **PASS 0/0**.
 
 ### Stage 3 — библиотека торгового контура
 Восстановлены signal/risk/execution/position-management/config/tracker модули, где логика была обоснована.
-Добавлен безопасный `AS_ModulesCompileTest.mq4`.
+Добавлен безопасный `Modules.mq4`.
 Результат: **PASS 0/0**.
 
 ### Stage 4 — интеграция

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 //  AS :: wave_provider.mqh
 //  RECOVERY STAGE 6 - MTF SOURCE BRIDGE
 //
@@ -29,7 +29,7 @@ public:
    AS_WaveProvider()
    {
       m_waveIndex     = 3;
-      m_indicatorName = "AS\\AS_Waves";
+      m_indicatorName = "AS\\Waves";
    }
 
    bool Init(const int waveIndex)

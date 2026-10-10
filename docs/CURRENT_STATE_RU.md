@@ -1,15 +1,15 @@
-# ANDRESLAW — текущее состояние восстановления
+﻿# ANDRESLAW — текущее состояние восстановления
 
 Дата контрольной точки: **2026-10-05**
 Статус: **RECOVERY STAGE 7 COMPLETE / TREND 4..8 24/24 PASS**
 
 ## Подтверждено
 
-1. `AS_Waves.mq4` — **0 errors / 0 warnings**; установлен на график, линии отображаются, runtime-ошибок нет.
-2. `AS_Targets.mq4` — **0 errors / 0 warnings**.
-3. `Andreslav_AS.mq4` после Stage 2 — **0 errors / 0 warnings**.
-4. `AS_ModulesCompileTest.mq4` — **0 errors / 0 warnings**.
-5. `Andreslav_AS.mq4` после интеграции Stage 4 — **0 errors / 0 warnings**.
+1. `Waves.mq4` — **0 errors / 0 warnings**; установлен на график, линии отображаются, runtime-ошибок нет.
+2. `Targets.mq4` — **0 errors / 0 warnings**.
+3. `Andreslav.mq4` после Stage 2 — **0 errors / 0 warnings**.
+4. `Modules.mq4` — **0 errors / 0 warnings**.
+5. `Andreslav.mq4` после интеграции Stage 4 — **0 errors / 0 warnings**.
 6. Stage 5 runtime `OnInit()` — **PASS** на `BTCUSD,M5`:
    - `initialized`
    - `[AS][STAGE4] Integrated safe core initialized.`
@@ -104,7 +104,7 @@ Stage 6 FIX1 — **PASS**.
 - `trading_lock=1`;
 - `cfg.enabled=false`.
 ### Stage 7 — Trend 4..8
-Создан `AS_Trend48SelfTest.mq4`.
+Создан `Trend48.mq4`.
 Первый прогон обнаружил один production-дефект:
 - `AS-TR-028`: adaptive mode пропускал невалидный обязательный старший уровень вместо fail-closed;
 - исходный результат: `PASS=23 FAIL=1 TOTAL=24`.

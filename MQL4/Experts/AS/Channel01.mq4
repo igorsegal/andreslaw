@@ -35,13 +35,13 @@ double SWT_C(int shift)
                   20,shift);
 }double OUR_H(int shift)
 {
-   return iCustom(NULL,0,"AS\\AS_Channel_01",
+   return iCustom(NULL,0,"AS\\Channel_01",
                   20,50,2.0,3.0,
                   1,shift);
 }
 double OUR_L(int shift)
 {
-   return iCustom(NULL,0,"AS\\AS_Channel_01",
+   return iCustom(NULL,0,"AS\\Channel_01",
                   20,50,2.0,3.0,
                   2,shift);
 }

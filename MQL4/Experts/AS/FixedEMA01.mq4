@@ -19,7 +19,7 @@ double FixedEMAValue(int shift)
    double v = iCustom(
       NULL,
       PERIOD_H1,
-      "AS\\AS_FixedEMA_01",
+      "AS\\FixedEMA_01",
       EMA_Period,
       0,
       shift

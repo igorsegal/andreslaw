@@ -178,7 +178,7 @@ shift 3
 закрытых баров.
 ---
 # 11. Existing Daily path
-Andreslav_AS.mq4 уже использует:
+Andreslav.mq4 уже использует:
 g_provider.GetClosedAS3TF(PERIOD_D1, as3_d1)
 Следовательно, D1 AS3 является существующим
 каноническим MTF path проекта.
@@ -186,7 +186,7 @@ g_provider.GetClosedAS3TF(PERIOD_D1, as3_d1)
 ---
 # 12. Historical causal D1 probe
 Создан:
-AS_SWTchD1TurnProbe.mq4
+D1Turn.mq4
 Цель:
 для каждого исторического H1 CHANNEL_ENTRY:
 H1 event time
