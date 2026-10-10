@@ -310,3 +310,37 @@ Interpretation:
 - width appears close to inherited previous width, not rebuilt from the local segment range;
 - exact width inheritance is not yet proven because only the mean ratio is known;
 - next step: directly test newW == oldW and newR == breakoutLow + oldW event-by-event, including tolerance distribution.
+
+
+---
+## 12. SWTsr exact reset rule probe — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS/ResetRule.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed:
+- changes = 43
+- DOWN resets = 43
+- newS == breakout-bar Low = 43/43
+
+Exact width inheritance:
+- |newW-oldW| <= 0.1 point: 0/43
+- <= 1 point: 0/43
+- <= 5 points: 4/43
+- mean delta = 78.860 points
+- max delta = 480 points
+
+Candidate upper rule newR = breakoutLow + oldW:
+- <= 0.1 point: 0/43
+- <= 1 point: 0/43
+- <= 5 points: 4/43
+- mean delta = 78.860 points
+- max delta = 480 points
+
+Conclusion:
+- PROVEN on this sample: after every observed downward SWTsr reset, new Support equals the breakout-bar Low;
+- REJECTED: exact inheritance of old width;
+- REJECTED: newR = breakoutLow + oldWidth;
+- next step: isolate the new Resistance law directly. Compare newR with oldR, center-line-derived candidates, and pre-reset extrema/event geometry.
