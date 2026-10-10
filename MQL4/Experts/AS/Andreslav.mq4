@@ -1,9 +1,9 @@
 ﻿//+------------------------------------------------------------------+
 //|                                                 Andreslav.mq4 |
-//|              RECOVERY STAGE 6 / MTF SOURCE SMOKE                 |
+//|        RECOVERY STAGE 8 / LOCKED DECISION RUNTIME               |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2026, AS Project"
-#property version   "1.05"
+#property version   "1.06"
 #property strict
 
 // Recovered SWT/Andreslav core
@@ -49,6 +49,95 @@ AS_WaveProvider *g_provider = NULL;
 AS_Config         g_cfg;
 AS_DailyState     g_daily;
 datetime          g_lastBarTime = 0;
+
+int AS_DirFromValue(double v)
+{
+   if(v>0.0) return AS_DIR_UP;
+   if(v<0.0) return AS_DIR_DN;
+   return AS_DIR_NO;
+}
+
+string AS_DirText(int d)
+{
+   if(d==AS_DIR_UP) return "UP";
+   if(d==AS_DIR_DN) return "DN";
+   return "NO";
+}
+
+string AS_SigText(int s)
+{
+   if(s==AS_SIG_BUY) return "BUY";
+   if(s==AS_SIG_SELL) return "SELL";
+   return "NONE";
+}
+
+void AS_LogLockedDecision(double h1_as3,double d1_as3,double w1_as3)
+{
+   double as2_now=0.0;
+   double as2_prev=0.0;
+   double as2_old=0.0;
+
+   bool as2_ok=
+      g_provider.GetWaveValueTF(PERIOD_H1,2,1,as2_now) &&
+      g_provider.GetWaveValueTF(PERIOD_H1,2,2,as2_prev) &&
+      g_provider.GetWaveValueTF(PERIOD_H1,2,3,as2_old);
+
+   if(!as2_ok)
+   {
+      Print("[AS][CORE][WARN] H1 AS2 series unavailable");
+      return;
+   }
+
+   AS_TrendHierarchy h;
+   AS_ClearTrendHierarchy(h);
+
+   AS_SetTrendState(h.hourly,AS_DirFromValue(h1_as3),false,true);
+   AS_SetTrendState(h.iday,AS_DirFromValue(d1_as3),false,true);
+   AS_SetTrendState(h.daily,AS_DirFromValue(w1_as3),false,true);
+
+   // Andreslaw project profile for the locked demo pipeline:
+   // Weekly trend source = closed W1 AS3.
+   // This is a project mapping, not a claim of exact SWT reconstruction.
+   AS_SetTrendState(h.weekly,AS_DirFromValue(w1_as3),false,true);
+
+   AS_Config decision_cfg;
+   AS_ConfigSafeDefaults(decision_cfg);
+
+   // Candidate calculation only. The production config remains disabled
+   // and the hard trading lock remains active.
+   decision_cfg.enabled=true;
+   decision_cfg.trend_vector=4;
+   decision_cfg.adaptive_mode=false;
+   decision_cfg.dominant_correction=false;
+   decision_cfg.contra_trend=false;
+
+   bool dominant_block=false;
+   int trend=AS_TrendDirection(h,decision_cfg,dominant_block);
+   int pattern=AS_PatternDirection(h);
+   int signal=AS_W2Signal(as2_now,as2_prev,as2_old);
+
+   int candidate=AS_CollectTrade(
+      trend,
+      pattern,
+      signal,
+      decision_cfg,
+      dominant_block,
+      false,
+      false,
+      false
+   );
+
+   Print("[AS][CORE][DECISION]",
+         " H1=",AS_DirText(AS_DirFromValue(h1_as3)),
+         " D1=",AS_DirText(AS_DirFromValue(d1_as3)),
+         " W1=",AS_DirText(AS_DirFromValue(w1_as3)),
+         " trend=",AS_DirText(trend),
+         " pattern=",AS_DirText(pattern),
+         " signal=",AS_SigText(signal),
+         " candidate=",AS_SigText(candidate),
+         " AS2=",DoubleToString(as2_now,8),
+         " trading_lock=",AS_STAGE6_TRADING_LOCK);
+}
 
 bool AS_Stage6LibrarySelfCheck()
 {
@@ -176,6 +265,9 @@ void OnTick()
    bool h1_ok=g_provider.GetClosedAS3TF(PERIOD_H1,as3_h1);
    bool d1_ok=g_provider.GetClosedAS3TF(PERIOD_D1,as3_d1);
    bool w1_ok=g_provider.GetClosedAS3TF(PERIOD_W1,as3_w1);
+
+   if(h1_ok && d1_ok && w1_ok)
+      AS_LogLockedDecision(as3_h1,as3_d1,as3_w1);
 
    if(InpVerboseLog)
    {
