@@ -8,7 +8,7 @@ if (-not (Test-Path $Mt4)) {
 }
 
 $sets = @(
-    @{ Src = Join-Path $Repo "MQL4\Experts";       Dst = Join-Path $Mt4 "Experts";       Filter = @("Andreslav.mq4","Modules.mq4") },
+    @{ Src = Join-Path $Repo "MQL4\Experts\AS";   Dst = Join-Path $Mt4 "Experts\AS";   Filter = @("*.mq4") },
     @{ Src = Join-Path $Repo "MQL4\Indicators\AS"; Dst = Join-Path $Mt4 "Indicators\AS"; Filter = @("*.mq4") },
     @{ Src = Join-Path $Repo "MQL4\Include\AS";    Dst = Join-Path $Mt4 "Include\AS";    Filter = @("*.mqh") }
 )
