@@ -3,7 +3,7 @@
 //|        RECOVERY STAGE 8 / LOCKED DECISION RUNTIME               |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2026, AS Project"
-#property version   "1.06"
+#property version   "1.07"
 #property strict
 
 // Recovered SWT/Andreslav core
@@ -69,6 +69,142 @@ string AS_SigText(int s)
    if(s==AS_SIG_BUY) return "BUY";
    if(s==AS_SIG_SELL) return "SELL";
    return "NONE";
+}
+
+bool AS_ReadProjectSR(double &support,double &resistance)
+{
+   support=0.0;
+   resistance=0.0;
+
+   ResetLastError();
+   resistance=iCustom(Symbol(),PERIOD_H1,"AS\\sr",0,1);
+   int errR=GetLastError();
+
+   ResetLastError();
+   support=iCustom(Symbol(),PERIOD_H1,"AS\\sr",1,1);
+   int errS=GetLastError();
+
+   if(errR!=0 || errS!=0)
+      return false;
+
+   if(!MathIsValidNumber(support) ||
+      !MathIsValidNumber(resistance) ||
+      support==EMPTY_VALUE ||
+      resistance==EMPTY_VALUE ||
+      support<=0.0 ||
+      resistance<=0.0 ||
+      support>=resistance)
+      return false;
+
+   return true;
+}
+
+void AS_LogOrderPreflight(int candidate)
+{
+   if(candidate==AS_SIG_NONE)
+   {
+      Print("[AS][CORE][PREFLIGHT]",
+            " candidate=NONE",
+            " market_ready=false",
+            " reason=NO_CANDIDATE",
+            " trading_lock=",AS_TRADING_LOCK);
+      return;
+   }
+
+   int cmd=(candidate==AS_SIG_BUY)?OP_BUY:OP_SELL;
+   double entry=(cmd==OP_BUY)
+      ? MarketInfo(Symbol(),MODE_ASK)
+      : MarketInfo(Symbol(),MODE_BID);
+
+   double support=0.0;
+   double resistance=0.0;
+   if(entry<=0.0 || !AS_ReadProjectSR(support,resistance))
+   {
+      Print("[AS][CORE][PREFLIGHT]",
+            " candidate=",AS_SigText(candidate),
+            " market_ready=false",
+            " reason=SR_UNAVAILABLE",
+            " trading_lock=",AS_TRADING_LOCK);
+      return;
+   }
+
+   double stop=(cmd==OP_BUY)?support:resistance;
+   bool stop_ok=(cmd==OP_BUY)?(stop<entry):(stop>entry);
+
+   if(!stop_ok)
+   {
+      Print("[AS][CORE][PREFLIGHT]",
+            " candidate=",AS_SigText(candidate),
+            " market_ready=false",
+            " reason=STOP_SIDE",
+            " entry=",DoubleToString(entry,Digits),
+            " stop=",DoubleToString(stop,Digits),
+            " trading_lock=",AS_TRADING_LOCK);
+      return;
+   }
+
+   double lots=0.0;
+   if(g_cfg.lots_manual>0.0)
+      lots=AS_NormalizeLots(Symbol(),g_cfg.lots_manual);
+   else
+      lots=AS_CalcLotsByRisk(Symbol(),entry,stop,g_cfg.risk_trade_percent);
+
+   if(lots<=0.0)
+   {
+      Print("[AS][CORE][PREFLIGHT]",
+            " candidate=",AS_SigText(candidate),
+            " market_ready=false",
+            " reason=LOT_ZERO",
+            " entry=",DoubleToString(entry,Digits),
+            " stop=",DoubleToString(stop,Digits),
+            " risk_pct=",DoubleToString(g_cfg.risk_trade_percent,2),
+            " trading_lock=",AS_TRADING_LOCK);
+      return;
+   }
+
+   double proposed_risk=AS_StopRiskMoney(Symbol(),cmd,lots,entry,stop);
+   double risk_after_pct=0.0;
+   bool risk_ok=AS_CheckRiskLimit(
+      Symbol(),
+      g_cfg.magic,
+      g_cfg.manual_position_control,
+      proposed_risk,
+      g_cfg.risk_limit_percent,
+      risk_after_pct
+   );
+
+   double margin_after=0.0;
+   bool margin_ok=AS_CheckMargin(
+      Symbol(),
+      cmd,
+      lots,
+      g_cfg.leverage_limit,
+      margin_after
+   );
+
+   double spread_points=0.0;
+   bool spread_ok=AS_CheckSpread(
+      Symbol(),
+      g_cfg.max_spread_points,
+      spread_points
+   );
+
+   bool market_ready=risk_ok && margin_ok && spread_ok;
+
+   Print("[AS][CORE][PREFLIGHT]",
+         " candidate=",AS_SigText(candidate),
+         " market_ready=",market_ready,
+         " entry=",DoubleToString(entry,Digits),
+         " stop=",DoubleToString(stop,Digits),
+         " lots=",DoubleToString(lots,2),
+         " risk_after_pct=",DoubleToString(risk_after_pct,2),
+         " margin_after=",DoubleToString(margin_after,2),
+         " spread=",DoubleToString(spread_points,1),
+         " risk_ok=",risk_ok,
+         " margin_ok=",margin_ok,
+         " spread_ok=",spread_ok,
+         " tp=OMITTED",
+         " trading_lock=",AS_TRADING_LOCK);
 }
 
 void AS_LogLockedDecision(double h1_as3,double d1_as3,double w1_as3)
@@ -137,6 +273,8 @@ void AS_LogLockedDecision(double h1_as3,double d1_as3,double w1_as3)
          " candidate=",AS_SigText(candidate),
          " AS2=",DoubleToString(as2_now,8),
          " trading_lock=",AS_TRADING_LOCK);
+
+   AS_LogOrderPreflight(candidate);
 }
 
 bool AS_LibrarySelfCheck()
