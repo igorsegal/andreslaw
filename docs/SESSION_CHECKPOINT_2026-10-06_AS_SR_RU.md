@@ -389,3 +389,25 @@ Conclusion:
 - mode42 is not the SWTch W4 center line (mode20);
 - SWTsr center remains an internal midpoint of its own R/S pair;
 - next candidate: compare SWTsr mode42 with midpoint of SWTch W4 R/S buffers mode18/mode19, because SWTch mode20 is not itself the midpoint of its W4 R/S pair.
+
+
+---
+## 15. SWTsr center vs SWTch W4 R/S pair — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS/ResetCenterSource.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed:
+- reset events = 43
+- SWTsr center vs midpoint(SWTch W4 R/S modes18/19): rejected
+  - all bars mean error = 927.753 points
+  - reset bars mean error = 1189.458 points
+- SWTsr center vs SWTch R: rejected, mean error = 1661.281 points
+- SWTsr center vs SWTch S: rejected, mean error = 3494.210 points
+- SWTsr width vs SWTch R/S width: rejected, mean error = 2465.053 points
+
+Conclusion:
+- SWTch modes18/19 are not the direct source geometry for SWTsr W4.
+- Next direct candidate is the actual SWTch W4 volatility channel H/L, modes14/15, including same-bar and breakout-bar widths.
