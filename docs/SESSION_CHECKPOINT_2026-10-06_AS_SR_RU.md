@@ -285,3 +285,28 @@ Conclusion:
 - increasing K trades recall for precision but does not reveal a useful matching optimum;
 - AS_sr remains a project formalization, not a recovered SWTsr clone;
 - if the goal is SWTsr recovery, the next step must study SWTsr post-break reset geometry directly rather than tune AS_sr hysteresis.
+
+
+---
+## 11. SWTsr reset geometry probe — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS_SWTsrResetGeometryProbe.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed:
+- SWTsr changes = 43
+- complete inter-change segments = 42
+- directional classification: UP=0, DOWN=43, BOTH=0, NODIR=0
+- newS == breakout-bar Low: 43/43
+- newS == segment Low: 42/42 complete segments
+- newR matched neither breakout/segment High
+- no exact width match to max single-bar range, segment wick range, or segment body range
+- mean newW/oldW = 1.010809
+
+Interpretation:
+- very strong candidate rule: after a downward reset, SWTsr anchors the new Support to the breakout bar Low;
+- width appears close to inherited previous width, not rebuilt from the local segment range;
+- exact width inheritance is not yet proven because only the mean ratio is known;
+- next step: directly test newW == oldW and newR == breakoutLow + oldW event-by-event, including tolerance distribution.
