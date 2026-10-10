@@ -344,3 +344,26 @@ Conclusion:
 - REJECTED: exact inheritance of old width;
 - REJECTED: newR = breakoutLow + oldWidth;
 - next step: isolate the new Resistance law directly. Compare newR with oldR, center-line-derived candidates, and pre-reset extrema/event geometry.
+
+
+---
+## 13. SWTsr reset resistance / center relation — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS/ResetResistance.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed:
+- changes = 43
+- DOWN resets = 43
+- newS == breakout-bar Low = 43/43
+- midpoint(newR,newS) == SWTsr mode42 newCL = 43/43 exact
+- newR == 2*newCL - newS = 43/43 exact
+- newR == oldR: rejected; mean error 82.093 points, max 486
+- newR == 2*oldCL - newS: rejected; mean error 141.140 points, max 790
+
+Conclusion:
+- PROVEN on this sample: SWTsr mode42 is the exact midpoint of the active W4 R/S pair at reset events;
+- therefore Resistance is not independently identified yet: newR = 2*newCL - newS is algebraically exact once newCL is known;
+- next step: identify the law/source of SWTsr mode42 center itself, with priority comparison against SWTch W4 center (mode20).
