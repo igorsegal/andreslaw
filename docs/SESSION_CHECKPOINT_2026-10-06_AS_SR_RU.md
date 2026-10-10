@@ -436,3 +436,35 @@ Observed:
 Conclusion:
 - this is the strongest SWTch relation found so far: at reset events SWTsr width tracks W4 volatility width closely, around +4%, but not by an exact fixed multiplier;
 - next step is timing identification: scan SWTch W4 width across nearby bars around each SWTsr reset to determine whether the source is lagged/advanced.
+
+
+---
+## 17. SWTch W4 width lag around SWTsr resets — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS/VolatilityLag.mq4
+- EURUSD,H1
+- 500 closed bars
+- lag scan +/-8 H1 bars
+
+Observed:
+- SWTsr reset events = 43
+- mean absolute width error falls monotonically as offset moves from +8 to -8:
+  - +8: 156.081 points
+  -  0: 100.985 points
+  - -4: 65.688 points
+  - -8: 40.811 points
+- mean ratio SWTsrWidth/SWTchWidth:
+  - offset 0: 1.041067
+  - offset -8: 1.009926
+- 31/43 events selected offset -8 as the best match inside the tested window
+
+Important direction:
+- lower MT4 shift means a newer/later bar;
+- therefore negative offsets in this probe are AFTER the SWTsr reset, not before it.
+
+Conclusion:
+- SWTch W4 width does not look like a direct same-bar causal input into the SWTsr reset width;
+- instead, the SWTch width tends to converge toward the already-reset SWTsr width several bars later;
+- because the optimum is pinned to the -8 search boundary, the timing scan is incomplete;
+- next step: rerun the same probe with a wider lag window before assigning any fixed lag or formula.
