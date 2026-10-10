@@ -367,3 +367,25 @@ Conclusion:
 - PROVEN on this sample: SWTsr mode42 is the exact midpoint of the active W4 R/S pair at reset events;
 - therefore Resistance is not independently identified yet: newR = 2*newCL - newS is algebraically exact once newCL is known;
 - next step: identify the law/source of SWTsr mode42 center itself, with priority comparison against SWTch W4 center (mode20).
+
+
+---
+## 14. SWTsr center vs SWTch W4 center — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS/ResetCenter.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed:
+- SWTsr center mode42 == midpoint(SWTsr R,S): 500/500 exact
+- SWTsr mode42 == SWTch mode20: rejected
+  - all 500 bars: mean error 242.420 points, max 774.598
+  - 43 reset bars: mean error 276.274 points, max 774.598
+- SWTsr mode42 == previous SWTch mode20 at reset: rejected
+  - mean error 282.351 points, max 785.902
+
+Conclusion:
+- mode42 is not the SWTch W4 center line (mode20);
+- SWTsr center remains an internal midpoint of its own R/S pair;
+- next candidate: compare SWTsr mode42 with midpoint of SWTch W4 R/S buffers mode18/mode19, because SWTch mode20 is not itself the midpoint of its W4 R/S pair.
