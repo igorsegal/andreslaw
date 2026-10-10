@@ -411,3 +411,28 @@ Observed:
 Conclusion:
 - SWTch modes18/19 are not the direct source geometry for SWTsr W4.
 - Next direct candidate is the actual SWTch W4 volatility channel H/L, modes14/15, including same-bar and breakout-bar widths.
+
+
+---
+## 16. SWTsr width vs SWTch W4 volatility width — 2026-10-10
+
+Probe:
+- MQL4/Experts/AS/VolatilityWidth.mq4
+- EURUSD,H1
+- 500 closed bars
+
+Observed:
+- resets = 43
+- SWTsr width == SWTch W4 H/L width: rejected exactly
+  - all bars mean absolute error = 231.642 points
+  - reset bars mean absolute error = 100.985 points
+  - breakout-bar mean absolute error = 110.419 points
+- ratio SWTsrWidth / SWTchWidth:
+  - all bars mean = 1.069389, std = 0.190230
+  - reset bars mean = 1.041067, std = 0.024241
+  - breakout-bar mean = 1.045069, std = 0.024849
+- SWTsr center vs midpoint(SWTch H/L): rejected
+
+Conclusion:
+- this is the strongest SWTch relation found so far: at reset events SWTsr width tracks W4 volatility width closely, around +4%, but not by an exact fixed multiplier;
+- next step is timing identification: scan SWTch W4 width across nearby bars around each SWTsr reset to determine whether the source is lagged/advanced.
