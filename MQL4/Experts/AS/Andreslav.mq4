@@ -40,10 +40,10 @@ input bool   InpVerboseLog = true;
 
 // -------------------------------------------------------------------
 // HARD SAFETY LOCK.
-// Stage 6 remains observation-only. No order operation is permitted.
+// Runtime remains observation-only. No order operation is permitted.
 // This is deliberately NOT an input.
 // -------------------------------------------------------------------
-#define AS_STAGE6_TRADING_LOCK 1
+#define AS_TRADING_LOCK 1
 
 AS_WaveProvider *g_provider = NULL;
 AS_Config         g_cfg;
@@ -136,10 +136,10 @@ void AS_LogLockedDecision(double h1_as3,double d1_as3,double w1_as3)
          " signal=",AS_SigText(signal),
          " candidate=",AS_SigText(candidate),
          " AS2=",DoubleToString(as2_now,8),
-         " trading_lock=",AS_STAGE6_TRADING_LOCK);
+         " trading_lock=",AS_TRADING_LOCK);
 }
 
-bool AS_Stage6LibrarySelfCheck()
+bool AS_LibrarySelfCheck()
 {
    // Exercise recovered signal contracts without creating a trade.
    AS_TrendHierarchy h;
@@ -170,20 +170,20 @@ int OnInit()
 
    if(InpHysteresis<0.0)
    {
-      Print("[AS][STAGE6][ERROR] InpHysteresis must be >= 0");
+      Print("[AS][CORE][ERROR] InpHysteresis must be >= 0");
       return(INIT_PARAMETERS_INCORRECT);
    }
 
    g_provider=new AS_WaveProvider();
    if(g_provider==NULL)
    {
-      Print("[AS][STAGE6][ERROR] Wave provider allocation failed");
+      Print("[AS][CORE][ERROR] Wave provider allocation failed");
       return(INIT_FAILED);
    }
 
    if(!g_provider.Init(3))
    {
-      Print("[AS][STAGE6][ERROR] Wave provider initialization failed");
+      Print("[AS][CORE][ERROR] Wave provider initialization failed");
       delete g_provider;
       g_provider=NULL;
       return(INIT_FAILED);
@@ -191,9 +191,9 @@ int OnInit()
 
    AS_DailyInit(g_daily);
 
-   if(!AS_Stage6LibrarySelfCheck())
+   if(!AS_LibrarySelfCheck())
    {
-      Print("[AS][STAGE6][ERROR] Recovered library self-check failed");
+      Print("[AS][CORE][ERROR] Recovered library self-check failed");
       delete g_provider;
       g_provider=NULL;
       return(INIT_FAILED);
@@ -202,10 +202,29 @@ int OnInit()
    AS_AccountSnapshot a;
    AS_GetAccountSnapshot(a);
 
-   Print("[AS][STAGE6] MTF-capable safe core initialized. trading_lock=",
-         AS_STAGE6_TRADING_LOCK,
+   Print("[AS][CORE] MTF-capable safe core initialized. trading_lock=",
+         AS_TRADING_LOCK,
          " cfg.enabled=",g_cfg.enabled,
          " equity=",DoubleToString(a.equity,2));
+
+   // Produce one decision snapshot immediately; do not wait for the next H1 bar.
+   double init_h1=0.0;
+   double init_d1=0.0;
+   double init_w1=0.0;
+   bool init_h1_ok=g_provider.GetClosedAS3TF(PERIOD_H1,init_h1);
+   bool init_d1_ok=g_provider.GetClosedAS3TF(PERIOD_D1,init_d1);
+   bool init_w1_ok=g_provider.GetClosedAS3TF(PERIOD_W1,init_w1);
+
+   if(init_h1_ok && init_d1_ok && init_w1_ok)
+      AS_LogLockedDecision(init_h1,init_d1,init_w1);
+   else
+      Print("[AS][CORE][WARN] Initial MTF decision source unavailable",
+            " H1_ok=",init_h1_ok,
+            " D1_ok=",init_d1_ok,
+            " W1_ok=",init_w1_ok,
+            " trading_lock=",AS_TRADING_LOCK);
+
+   g_lastBarTime=iTime(Symbol(),Period(),0);
 
    return(INIT_SUCCEEDED);
 }
@@ -218,7 +237,7 @@ void OnDeinit(const int reason)
       g_provider=NULL;
    }
 
-   Print("[AS][STAGE6] Deinitialized. reason=",reason);
+   Print("[AS][CORE] Deinitialized. reason=",reason);
 }
 
 void OnTick()
@@ -249,14 +268,14 @@ void OnTick()
    if(!g_provider.GetClosedAS3SeriesTF(PERIOD_CURRENT,
                                        as3_now,as3_prev,as3_old))
    {
-      Print("[AS][STAGE6][WARN] Current-TF AS3 closed-bar series unavailable");
+      Print("[AS][CORE][WARN] Current-TF AS3 closed-bar series unavailable");
       return;
    }
 
    // ----------------------------------------------------------------
-   // STAGE 6 MTF SOURCE SMOKE.
+   // MTF SOURCE CONTEXT.
    // H1 / D1 / W1 are explicit source contexts only.
-   // They are NOT yet assigned to short/medium/long/basic hierarchy.
+   // H1/D1/W1 feed the explicit Andreslaw project decision profile.
    // ----------------------------------------------------------------
    double as3_h1=0.0;
    double as3_d1=0.0;
@@ -273,22 +292,22 @@ void OnTick()
    {
       if(h1_ok && d1_ok && w1_ok)
       {
-         Print("[AS][STAGE6][MTF] source=AS_Waves",
+         Print("[AS][CORE][MTF] source=AS_Waves",
                " H1_bar=",TimeToString(iTime(Symbol(),PERIOD_H1,1),TIME_DATE|TIME_MINUTES),
                " H1_AS3=",DoubleToString(as3_h1,8),
                " D1_bar=",TimeToString(iTime(Symbol(),PERIOD_D1,1),TIME_DATE|TIME_MINUTES),
                " D1_AS3=",DoubleToString(as3_d1,8),
                " W1_bar=",TimeToString(iTime(Symbol(),PERIOD_W1,1),TIME_DATE|TIME_MINUTES),
                " W1_AS3=",DoubleToString(as3_w1,8),
-               " trading_lock=",AS_STAGE6_TRADING_LOCK);
+               " trading_lock=",AS_TRADING_LOCK);
       }
       else
       {
-         Print("[AS][STAGE6][WARN] MTF source unavailable",
+         Print("[AS][CORE][WARN] MTF source unavailable",
                " H1_ok=",h1_ok,
                " D1_ok=",d1_ok,
                " W1_ok=",w1_ok,
-               " trading_lock=",AS_STAGE6_TRADING_LOCK);
+               " trading_lock=",AS_TRADING_LOCK);
       }
    }
 
@@ -312,7 +331,7 @@ void OnTick()
 
    if(InpVerboseLog)
    {
-      Print("[AS][STAGE6] bar=",
+      Print("[AS][CORE] bar=",
             TimeToString(iTime(Symbol(),Period(),1),TIME_DATE|TIME_MINUTES),
             " AS3=",DoubleToString(as3_now,8),
             " prev=",DoubleToString(as3_prev,8),
@@ -322,7 +341,7 @@ void OnTick()
             " spread_ok=",spread_ok,
             " open_positions=",p.buys+p.sells,
             " daily_block=",g_daily.trading_blocked,
-            " trading_lock=",AS_STAGE6_TRADING_LOCK);
+            " trading_lock=",AS_TRADING_LOCK);
    }
 
    // IMPORTANT:
