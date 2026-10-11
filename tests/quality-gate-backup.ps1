@@ -38,6 +38,10 @@ try {
         } catch { $caught = $true }
         if (!$caught) { throw "NEGATIVE_CASE_NOT_REJECTED" }
         Write-Host "NEGATIVE_CASE=PASS"
+        # The expected failing native Git command can leave LASTEXITCODE=1.
+        # Clear it only after the negative assertion has passed, otherwise
+        # pwsh returns failure to GitHub Actions despite all gates passing.
+        $global:LASTEXITCODE = 0
     } finally { Pop-Location }
     Write-Host "QUALITY_GATE_BACKUP=PASS"
 } finally {
