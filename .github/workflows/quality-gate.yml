@@ -1,8 +1,9 @@
-﻿name: Andreslav Quality Gate
+name: Andreslav Quality Gate
 on:
   push:
   pull_request:
   workflow_dispatch:
+
 jobs:
   quality-gate:
     runs-on: windows-latest
@@ -12,5 +13,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Git Bundle Runtime Test
         shell: pwsh
-        run: |
-          ./tests/quality-gate-03.ps1
+        run: ./tests/quality-gate-03.ps1
+      - name: Backup Script Positive and Negative Tests
+        shell: pwsh
+        run: ./tests/quality-gate-backup.ps1
