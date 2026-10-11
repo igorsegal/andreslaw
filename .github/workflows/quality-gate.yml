@@ -1,0 +1,16 @@
+﻿name: Andreslav Quality Gate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  quality-gate:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Git Bundle Runtime Test
+        shell: pwsh
+        run: |
+          ./tests/quality-gate-03.ps1
