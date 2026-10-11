@@ -1,0 +1,10 @@
+﻿build/
+build-*/
+out/
+*.exe
+*.obj
+*.o
+*.pdb
+CMakeFiles/
+CMakeCache.txt
+Testing/
