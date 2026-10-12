@@ -13,3 +13,24 @@ add_test(NAME as_contracts COMMAND as_tests)
 add_executable(as_sim_tests tests/test_simulator.cpp)
 target_link_libraries(as_sim_tests PRIVATE as_core)
 add_test(NAME as_simulator_contracts COMMAND as_sim_tests)
+add_executable(as_xfbar_tests tests/test_xfbar_reader.cpp)
+target_link_libraries(as_xfbar_tests PRIVATE as_core)
+add_test(NAME as_xfbar_contracts COMMAND as_xfbar_tests)
+
+# In Release, NDEBUG normally turns assert() into a no-op. Existing contract tests
+# still use assert; explicitly re-enable those checks until migrated to check().
+if(MSVC)
+  target_compile_options(as_tests PRIVATE /UNDEBUG)
+  target_compile_options(as_sim_tests PRIVATE /UNDEBUG)
+else()
+  target_compile_options(as_tests PRIVATE -UNDEBUG)
+  target_compile_options(as_sim_tests PRIVATE -UNDEBUG)
+endif()
+
+add_test(NAME as_cli_rejects_missing_args COMMAND as_lab)
+set_tests_properties(as_cli_rejects_missing_args PROPERTIES WILL_FAIL TRUE)
+
+# End-to-end CLI success test: a valid controlled XFBAR fixture must return exit 0.
+add_executable(as_cli_success_tests tests/test_cli_success.cpp)
+target_link_libraries(as_cli_success_tests PRIVATE as_core)
+add_test(NAME as_cli_accepts_valid_xfbar COMMAND as_cli_success_tests $<TARGET_FILE:as_lab>)
